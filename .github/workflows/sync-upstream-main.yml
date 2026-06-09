@@ -1,0 +1,71 @@
+name: Sync upstream main into genlabs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open-sync-pr:
+    name: Open upstream sync PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Genesis branch
+        uses: actions/checkout@v4
+        with:
+          ref: genlabs
+          fetch-depth: 0
+
+      - name: Merge upstream main into a sync branch
+        id: sync
+        env:
+          SYNC_BRANCH: genlabs-sync-upstream-main
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/hypothesis/h.git
+          git fetch upstream main
+
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "needs_pr=false" >> "${GITHUB_OUTPUT}"
+            echo "Genesis branch already contains upstream/main."
+            exit 0
+          fi
+
+          git switch -c "${SYNC_BRANCH}"
+          git merge --no-edit upstream/main
+          git push --force-with-lease origin "${SYNC_BRANCH}"
+
+          echo "needs_pr=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Open pull request
+        if: steps.sync.outputs.needs_pr == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SYNC_BRANCH: genlabs-sync-upstream-main
+        run: |
+          set -euo pipefail
+
+          existing_pr="$(gh pr list \
+            --base genlabs \
+            --head "${SYNC_BRANCH}" \
+            --json number \
+            --jq '.[0].number // empty')"
+
+          if [ -n "${existing_pr}" ]; then
+            echo "Sync PR already exists: #${existing_pr}"
+            exit 0
+          fi
+
+          gh pr create \
+            --base genlabs \
+            --head "${SYNC_BRANCH}" \
+            --title "Sync upstream Hypothesis main into Genesis branch" \
+            --body "This PR merges the latest hypothesis/h main into the Genesis genlabs branch for review before integration."
