@@ -1,7 +1,7 @@
 import click
 
 from h import models
-from h.models.auth_client import GrantType
+from h.models.auth_client import GrantType, ResponseType
 from h.security import token_urlsafe
 
 
@@ -58,3 +58,51 @@ def add(ctx, name, authority, type_, redirect_uri, grant_type):  # noqa: PLR0913
         message += f"\nClient Secret: {secret}"
 
     click.echo(message)
+
+
+@authclient.command("upsert-genesis-jwt")
+@click.option(
+    "--client-id",
+    envvar="GENESIS_ANNOTATIONS_JWT_CLIENT_ID",
+    required=True,
+    help="Stable Genesis OAuth client ID",
+)
+@click.option(
+    "--client-secret",
+    envvar="GENESIS_ANNOTATIONS_JWT_CLIENT_SECRET",
+    required=True,
+    help="Genesis JWT signing secret",
+)
+@click.option(
+    "--authority",
+    envvar="AUTHORITY",
+    required=True,
+    help="Genesis annotation authority",
+)
+@click.option(
+    "--name",
+    default="Genesis Annotations SSO",
+    help="Human-readable OAuth client name",
+)
+@click.pass_context
+def upsert_genesis_jwt(ctx, client_id, client_secret, authority, name):
+    """Create or update the Genesis JWT bearer OAuth client."""
+    request = ctx.obj["bootstrap"]()
+    client = request.db.query(models.AuthClient).filter_by(id=client_id).one_or_none()
+    if client is None:
+        client = models.AuthClient(id=client_id)
+        request.db.add(client)
+        action = "created"
+    else:
+        action = "updated"
+
+    client.authority = authority
+    client.grant_type = GrantType.jwt_bearer
+    client.name = name
+    client.response_type = ResponseType.token
+    client.secret = client_secret
+    client.trusted = True
+    request.db.flush()
+    request.tm.commit()
+
+    click.echo(f"Genesis JWT authclient {action}: {client.id}")

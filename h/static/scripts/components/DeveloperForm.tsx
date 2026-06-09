@@ -26,7 +26,7 @@ export default function DeveloperForm() {
           href="https://h.readthedocs.io/en/latest/api/"
           underline="always"
         >
-          Hypothesis API
+          Genesis Annotations API
         </Link>
         .
       </Text>

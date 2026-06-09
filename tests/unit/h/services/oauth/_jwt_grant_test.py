@@ -139,6 +139,37 @@ class TestJWTAuthorizationGrantValidateTokenRequest:
 
         assert exc.value.description == "Grant token subject (sub) could not be found."
 
+    def test_auto_provisions_missing_user_when_signup_service_is_available(
+        self,
+        authclient,
+        db_session,
+        oauth_request,
+        pyramid_request,
+        request_validator,
+        user,
+    ):
+        db_session.delete(user)
+        db_session.flush()
+        user_signup_svc = mock.Mock()
+        user_signup_svc.signup.return_value = user
+        grant = JWTAuthorizationGrant(
+            request_validator,
+            user_service_factory(None, pyramid_request),
+            "domain.test",
+            user_signup_svc=user_signup_svc,
+        )
+
+        grant.validate_token_request(oauth_request)
+
+        user_signup_svc.signup.assert_called_once_with(
+            require_activation=False,
+            authority=authclient.authority,
+            username=user.username,
+            email=None,
+            display_name=None,
+        )
+        assert oauth_request.user == user
+
     def test_raises_when_user_authority_does_not_match_client_authority(
         self, grant, authclient, user
     ):

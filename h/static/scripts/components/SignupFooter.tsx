@@ -45,7 +45,7 @@ export default function SignupFooter({ action }: SignupFooterProps) {
       )}
       {action === 'signup' && (
         <>
-          Don{"'"}t have a Hypothesis account?{' '}
+          Don{"'"}t have a Genesis Annotations account?{' '}
           <Link
             data-testid="signup-link"
             underline="always"

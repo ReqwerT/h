@@ -21,7 +21,7 @@ type IdProviderBadgeProps = {
 
 /**
  * Box indicating the OIDC / social login identity being associated with a
- * Hypothesis account.
+ * Genesis Annotations account.
  */
 function IdProviderBadge({ provider, identity }: IdProviderBadgeProps) {
   return (
@@ -113,7 +113,9 @@ export default function SignupForm({
 
   return (
     <>
-      <FormHeader center={config.forOAuth}>Sign up for Hypothesis</FormHeader>
+      <FormHeader center={config.forOAuth}>
+        Sign up for Genesis Annotations
+      </FormHeader>
       <Form csrfToken={config.csrfToken} onSubmit={() => setSubmitted(true)}>
         {idProvider && config.identity && (
           <IdProviderBadge
@@ -184,17 +186,17 @@ export default function SignupForm({
           required
         >
           I have read and agree to the{' '}
-          <a className="link" href="https://web.hypothes.is/privacy/">
+          <a className="link" href="https://genlabs.vc/privacy/">
             privacy policy
           </a>
           ,{' '}
-          <a className="link" href="https://web.hypothes.is/terms-of-service/">
+          <a className="link" href="https://genlabs.vc/terms/">
             terms of service
           </a>
           , and{' '}
           <a
             className="link"
-            href="https://web.hypothes.is/community-guidelines/"
+            href="https://genlabs.vc/community-guidelines/"
           >
             community guidelines
           </a>
@@ -211,7 +213,7 @@ export default function SignupForm({
             commsOptIn.update((e.target as HTMLInputElement).checked);
           }}
         >
-          I would like to receive news about annotation and Hypothesis.
+          I would like to receive news about Genesis Annotations.
         </Checkbox>
         <FormFooter
           // Prevent duplicate signup attempts.

@@ -1,7 +1,7 @@
 {% extends "h:templates/layouts/base.html.jinja2" %}
 {% from "h:templates/includes/js_app.html.jinja2" import css_bundle, js_app_container, js_bundle %}
 
-{% block page_title %}{{ heading|default("Sign up for Hypothesis") }}{% endblock %}
+{% block page_title %}{{ heading|default("Sign up for Genesis Annotations") }}{% endblock %}
 
 {% block header %}
   {% include "h:templates/includes/logo-header.html.jinja2" %}
@@ -25,7 +25,7 @@
         <p>Please check your email and open the link to activate your account.</p>
 
         <p>If you don't receive your activation link within a few minutes, send an
-          email to <a href="mailto:support@hypothes.is">support@hypothes.is</a></p>
+          email to <a href="mailto:support@genlabs.vc">support@genlabs.vc</a></p>
       </div>
     {% else %}
       {{ js_app_container(js_config) }}

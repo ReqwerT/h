@@ -119,3 +119,11 @@ class VerifiedJWTGrantToken(JWTGrantToken):
         if not sub:
             raise MissingJWTGrantTokenClaimError("sub", "subject")  # noqa: EM101
         return sub
+
+    @property
+    def email(self):
+        return self._claims.get("email") or None
+
+    @property
+    def display_name(self):
+        return self._claims.get("name") or None

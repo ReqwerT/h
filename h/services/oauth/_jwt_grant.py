@@ -39,13 +39,16 @@ from oauthlib.oauth2.rfc6749 import errors
 from oauthlib.oauth2.rfc6749.grant_types.base import GrantTypeBase
 
 from h.services.oauth._jwt_grant_token import JWTGrantToken
+from h.services.user_signup import EmailConflictError, UsernameConflictError
+from h.util.user import split_user
 
 
 class JWTAuthorizationGrant(GrantTypeBase):
-    def __init__(self, request_validator, user_svc, domain):
+    def __init__(self, request_validator, user_svc, domain, user_signup_svc=None):
         super().__init__(request_validator)
         self.user_svc = user_svc
         self.domain = domain
+        self.user_signup_svc = user_signup_svc
 
     def create_token_response(self, request, token_handler):
         """
@@ -117,7 +120,7 @@ class JWTAuthorizationGrant(GrantTypeBase):
 
         verified_token = token.verified(key=authclient.secret, audience=self.domain)
 
-        user = self.user_svc.fetch(verified_token.subject)
+        user = self._fetch_or_create_user(verified_token, authclient)
         if user is None:
             raise errors.InvalidGrantError(  # noqa: TRY003
                 "Grant token subject (sub) could not be found."  # noqa: EM101
@@ -129,3 +132,23 @@ class JWTAuthorizationGrant(GrantTypeBase):
             )
 
         request.user = user
+
+    def _fetch_or_create_user(self, verified_token, authclient):
+        user = self.user_svc.fetch(verified_token.subject)
+        if user is not None or self.user_signup_svc is None:
+            return user
+
+        parts = split_user(verified_token.subject)
+        if parts["domain"] != authclient.authority:
+            return None
+
+        try:
+            return self.user_signup_svc.signup(
+                require_activation=False,
+                authority=authclient.authority,
+                username=parts["username"],
+                email=verified_token.email,
+                display_name=verified_token.display_name,
+            )
+        except (EmailConflictError, UsernameConflictError):
+            return self.user_svc.fetch(verified_token.subject)

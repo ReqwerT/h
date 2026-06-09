@@ -226,8 +226,8 @@ function ConnectAccountButtons({
       <Heading text="Connect your account" />
 
       <p className="mb-9">
-        Connecting an account enables you to log in to Hypothesis without your
-        Hypothesis password.
+        Connecting an account enables you to log in to Genesis Annotations
+        without your Genesis Annotations password.
       </p>
 
       <div class="mx-auto max-w-[400px] flex flex-col gap-y-3">

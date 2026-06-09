@@ -32,11 +32,16 @@ class OAuthProviderService(AuthorizationEndpoint, RevocationEndpoint, TokenEndpo
     .. _`token endpoint`: https://oauthlib.readthedocs.io/en/latest/oauth2/endpoints/token.html
     """
 
-    def __init__(self, oauth_validator, user_svc, domain):
+    def __init__(self, oauth_validator, user_svc, domain, user_signup_svc=None):
         self.oauth_validator = oauth_validator
 
         auth_code_grant = AuthorizationCodeGrant(oauth_validator)
-        jwt_auth_grant = JWTAuthorizationGrant(oauth_validator, user_svc, domain)
+        jwt_auth_grant = JWTAuthorizationGrant(
+            oauth_validator,
+            user_svc,
+            domain,
+            user_signup_svc=user_signup_svc,
+        )
 
         refresh_grant = RefreshTokenGrant(oauth_validator)
         refresh_grant.custom_validators.pre_token.append(
@@ -141,9 +146,11 @@ class OAuthProviderService(AuthorizationEndpoint, RevocationEndpoint, TokenEndpo
 
 def factory(_context, request):
     user_svc = request.find_service(name="user")
+    user_signup_svc = request.find_service(name="user_signup")
 
     return OAuthProviderService(
         oauth_validator=OAuthValidator(session=request.db),
         user_svc=user_svc,
         domain=request.domain,
+        user_signup_svc=user_signup_svc,
     )

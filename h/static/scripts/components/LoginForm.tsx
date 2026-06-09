@@ -1,4 +1,4 @@
-import { Button, Link, LogoIcon } from '@hypothesis/frontend-shared';
+import { Button, Link } from '@hypothesis/frontend-shared';
 import { useContext } from 'preact/hooks';
 
 import { LoginFormsConfig } from '../config';
@@ -22,14 +22,11 @@ export default function LoginForm({ enableSocialLogin }: LoginFormProps) {
   const username = useFormValue(form, 'username', '');
   const password = useFormValue(form, 'password', '');
 
-  // In the OAuth window we include "with Hypothesis" and a logo to make it
+  // In the OAuth window we include the Genesis service name to make it
   // more obvious which credentials are expected, as this is less obvious than
   // when visiting the website directly.
   const title = config.forOAuth ? (
-    <>
-      Log in to Hypothesis{' '}
-      <LogoIcon className="inline ml-1 w-[28px] h-[28px]" />
-    </>
+    <>Log in to Genesis Annotations</>
   ) : (
     'Log in'
   );

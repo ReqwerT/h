@@ -105,7 +105,12 @@ class TestOAuthProviderService:
 
 class TestOAuthProviderServiceFactory:
     def test_it_returns_oauth_provider_service(
-        self, pyramid_request, user_service, OAuthValidator, OAuthProviderService
+        self,
+        pyramid_request,
+        user_service,
+        user_signup_service,
+        OAuthValidator,
+        OAuthProviderService,
     ):
         service = factory(None, pyramid_request)
 
@@ -114,6 +119,7 @@ class TestOAuthProviderServiceFactory:
             oauth_validator=OAuthValidator.return_value,
             user_svc=user_service,
             domain=pyramid_request.domain,
+            user_signup_svc=user_signup_service,
         )
 
         assert service == OAuthProviderService.return_value
@@ -125,3 +131,7 @@ class TestOAuthProviderServiceFactory:
     @pytest.fixture
     def OAuthValidator(self, patch):
         return patch("h.services.oauth.service.OAuthValidator")
+
+    @pytest.fixture
+    def user_signup_service(self, pyramid_request):
+        return pyramid_request.find_service(name="user_signup")

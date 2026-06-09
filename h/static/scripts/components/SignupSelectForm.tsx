@@ -23,7 +23,9 @@ export default function SignupSelectForm() {
   return (
     <>
       <div className="flex flex-col text-md">
-        <FormHeader center={config.forOAuth}>Sign up for Hypothesis</FormHeader>
+        <FormHeader center={config.forOAuth}>
+          Sign up for Genesis Annotations
+        </FormHeader>
         <div
           // Top margin intended to give roughly even spacing above and below the
           // provider list.
