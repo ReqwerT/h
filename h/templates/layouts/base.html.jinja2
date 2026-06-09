@@ -1,5 +1,8 @@
 {#- Controls the name of the default style bundle included on the page. -#}
 {%- set style_bundle = style_bundle|default('site_css') -%}
+{%- macro genesis_asset_url(url) -%}
+  {%- if url.startswith('/assets/') -%}/annotations{{ url }}{%- else -%}{{ url }}{%- endif -%}
+{%- endmacro -%}
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns#">
   <head>
@@ -31,22 +34,22 @@
 
     {% block styles %}
       {% for url in asset_urls(style_bundle) %}
-      <link rel="stylesheet" href="{{ url }}">
+      <link rel="stylesheet" href="{{ genesis_asset_url(url) }}">
       {% endfor %}
     {% endblock %}
 
     <link rel="apple-touch-icon" sizes="180x180"
-          href="{{ asset_url('images/apple-touch-icon-180x180.png') }}">
+          href="{{ genesis_asset_url(asset_url('images/apple-touch-icon-180x180.png')) }}">
     <link rel="icon" type="image/png" sizes="16x16"
-          href="{{ asset_url('images/favicons/favicon-16x16.png') }}">
+          href="{{ genesis_asset_url(asset_url('images/favicons/favicon-16x16.png')) }}">
     <link rel="icon" type="image/png" sizes="32x32"
-          href="{{ asset_url('images/favicons/favicon-32x32.png') }}">
+          href="{{ genesis_asset_url(asset_url('images/favicons/favicon-32x32.png')) }}">
     <link rel="icon" type="image/png" sizes="96x96"
-          href="{{ asset_url('images/favicons/favicon-96x96.png') }}">
+          href="{{ genesis_asset_url(asset_url('images/favicons/favicon-96x96.png')) }}">
     <link rel="icon" type="image/png" sizes="192x192"
-          href="{{ asset_url('images/favicons/android-chrome-192x192.png') }}">
+          href="{{ genesis_asset_url(asset_url('images/favicons/android-chrome-192x192.png')) }}">
     <link rel="shortcut icon"
-          href="{{ asset_url('images/favicons/favicon.ico') }}">
+          href="{{ genesis_asset_url(asset_url('images/favicons/favicon.ico')) }}">
 
     {% if google_analytics_measurement_id %}
     <meta name="google-analytics-measurement-id" content="{{ google_analytics_measurement_id }}">
@@ -60,11 +63,11 @@
     {# Import map must be placed before any module script tags. Firefox will
        fail to load it otherwise. #}
     {% block importmap %}
-    <script type="importmap" nonce="{{ request.csp_nonce }}">{{ asset_import_map() | tojson }}</script>
+    <script type="importmap" nonce="{{ request.csp_nonce }}">{{ (asset_import_map() | tojson).replace('"/assets/', '"/annotations/assets/') | safe }}</script>
     {% endblock %}
 
     {% for url in asset_urls("header_js") %}
-    <script type="module" src="{{ url }}"></script>
+    <script type="module" src="{{ genesis_asset_url(url) }}"></script>
     {% endfor %}
   </head>
   <body class="body">
@@ -78,7 +81,7 @@
 
     {% block scripts %}
     {% for url in asset_urls("site_js") %}
-    <script type="module" src="{{ url }}"></script>
+    <script type="module" src="{{ genesis_asset_url(url) }}"></script>
     {% endfor %}
     {% endblock %}
   </body>

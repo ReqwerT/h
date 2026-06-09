@@ -3,6 +3,222 @@
 {% from '../includes/annotation_card.html.jinja2' import annotation_card %}
 {% from '../includes/share_widget.html.jinja2' import share_widget %}
 
+{% block styles %}
+  {{ super() }}
+  <style>
+    :root {
+      --genesis-bg: #101113;
+      --genesis-panel: #1c1e22;
+      --genesis-panel-soft: #24272d;
+      --genesis-text: #f7f7f4;
+      --genesis-muted: #b7b4aa;
+      --genesis-gold: #f3c85b;
+      --genesis-border: #44474f;
+      --genesis-shadow: 0 22px 52px rgb(0 0 0 / 0.32);
+    }
+
+    html,
+    body.body {
+      background: var(--genesis-bg);
+      color: var(--genesis-text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        sans-serif;
+      min-height: 100%;
+    }
+
+    .genesis-server-header {
+      align-items: center;
+      background: color-mix(in srgb, var(--genesis-panel) 92%, transparent);
+      border-bottom: 1px solid var(--genesis-border);
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(180px, 0.7fr) minmax(280px, 1fr) auto;
+      padding: 18px clamp(20px, 4vw, 56px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .genesis-server-brand {
+      align-items: center;
+      color: var(--genesis-text);
+      display: inline-flex;
+      font-size: 20px;
+      font-weight: 800;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .genesis-server-brand::before {
+      background: var(--genesis-gold);
+      border-radius: 999px;
+      content: "";
+      height: 8px;
+      width: 8px;
+    }
+
+    .genesis-server-search {
+      align-items: center;
+      background: #15171b;
+      border: 1px solid var(--genesis-border);
+      border-radius: 16px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr auto;
+      padding: 6px;
+    }
+
+    .genesis-server-search input {
+      background: transparent;
+      border: 0;
+      color: var(--genesis-text);
+      font: inherit;
+      min-height: 38px;
+      min-width: 0;
+      padding: 0 10px;
+    }
+
+    .genesis-server-search input:focus {
+      outline: 0;
+    }
+
+    .genesis-server-search button,
+    .genesis-server-link {
+      background: color-mix(in srgb, var(--genesis-gold) 16%, transparent);
+      border: 1px solid color-mix(in srgb, var(--genesis-gold) 56%, var(--genesis-border));
+      border-radius: 12px;
+      color: var(--genesis-text);
+      font-weight: 800;
+      min-height: 40px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+
+    .genesis-server-actions {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .genesis-server-hero {
+      margin: 0 auto;
+      max-width: 1180px;
+      padding: clamp(48px, 7vw, 92px) clamp(20px, 4vw, 56px) 28px;
+    }
+
+    .genesis-server-hero p:first-child,
+    .genesis-server-eyebrow {
+      color: var(--genesis-gold);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      margin: 0 0 12px;
+      text-transform: uppercase;
+    }
+
+    .genesis-server-hero h1 {
+      color: var(--genesis-text);
+      font-size: clamp(42px, 6vw, 68px);
+      font-weight: 300;
+      letter-spacing: 0;
+      line-height: 1;
+      margin: 0 0 18px;
+    }
+
+    .genesis-server-hero p:last-child {
+      color: var(--genesis-muted);
+      font-size: 18px;
+      line-height: 1.55;
+      margin: 0;
+      max-width: 720px;
+    }
+
+    .genesis-server-shell {
+      margin: 0 auto 80px;
+      max-width: 1180px;
+      padding: 0 clamp(20px, 4vw, 56px);
+    }
+
+    .search-result-container {
+      background: var(--genesis-panel);
+      border: 1px solid var(--genesis-border);
+      border-radius: 24px;
+      box-shadow: var(--genesis-shadow);
+      color: var(--genesis-text);
+      overflow: hidden;
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .search-result-zero,
+    .search-results,
+    .search-result-sidebar,
+    .search-result-bucket,
+    .annotation-card {
+      background: color-mix(in srgb, var(--genesis-panel-soft) 92%, transparent);
+      border-color: var(--genesis-border);
+      color: var(--genesis-text);
+    }
+
+    .search-result-zero {
+      border: 1px solid var(--genesis-border);
+      border-radius: 18px;
+      color: var(--genesis-muted);
+      font-size: 18px;
+      min-height: 260px;
+      padding: clamp(28px, 5vw, 56px);
+    }
+
+    .search-result-zero strong {
+      color: var(--genesis-text);
+      display: block;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 1.08;
+      max-width: 720px;
+    }
+
+    .search-results__total,
+    .search-result__timeframe,
+    .search-result-sidebar__title,
+    .search-result-sidebar__subtitle,
+    .search-result-bucket__title {
+      color: var(--genesis-text);
+    }
+
+    .link,
+    .link--plain,
+    .search-result-bucket__title,
+    .search-result-bucket__domain-link {
+      color: var(--genesis-gold);
+    }
+
+    .js-share-widget,
+    .footer {
+      display: none;
+    }
+
+    .genesis-server-footer {
+      border-top: 1px solid var(--genesis-border);
+      color: var(--genesis-muted);
+      margin: 0 auto;
+      max-width: 1180px;
+      padding: 28px clamp(20px, 4vw, 56px) 48px;
+    }
+
+    @media (max-width: 820px) {
+      .genesis-server-header {
+        grid-template-columns: 1fr;
+      }
+
+      .genesis-server-actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+{% endblock %}
+
 {% macro search_result_nav(name) %}
 {# This <form> is needed for IE because it doesn't support the `form`
    attribute. See commit message. #}
@@ -372,12 +588,42 @@
 {% endmacro %}
 
 {% block header %}
-  {% from "h:templates/includes/navbar.html.jinja2" import navbar with context %}
-  {{ navbar(search=search_results, opts=opts) }}
+  <header class="genesis-server-header">
+    <a class="genesis-server-brand" href="/annotations/search">
+      Genesis
+    </a>
+    <form class="genesis-server-search" action="/annotations/search" method="GET" role="search">
+      <input
+        aria-label="{{ _('Search Genesis annotations') }}"
+        autocomplete="off"
+        name="q"
+        placeholder="Search partner notes, pages, tags..."
+        value="{{ q }}">
+      <button type="submit">Search</button>
+    </form>
+    <nav class="genesis-server-actions" aria-label="Genesis annotation links">
+      <a class="genesis-server-link" href="https://genlabs.vc/portal/gene-notes/">
+        Gene-Notes
+      </a>
+      <a class="genesis-server-link" href="https://genlabs.vc/portal/">
+        Partner Portal
+      </a>
+    </nav>
+  </header>
 {% endblock %}
 
 {% block content %}
-  <div class="search-result-container">
+  <section class="genesis-server-hero">
+    <p>Genesis Annotation Server</p>
+    <h1>Partner notes</h1>
+    <p>
+      Search private Genesis partner annotations. This server is protected by
+      Genesis partner access and stores annotation data in Genesis PostgreSQL.
+    </p>
+  </section>
+
+  <section class="genesis-server-shell">
+    <div class="search-result-container">
     {% if group %}
       {{ search_result_nav(group.name) }}
     {% elif user %}
@@ -466,9 +712,12 @@
     <div class="js-share-widget is-hidden-when-loading">
       {{ share_widget() }}
     </div>
-  </div>
+    </div>
+  </section>
 {% endblock %}
 
 {% block footer %}
-  {% include "h:templates/includes/footer.html.jinja2" %}
+  <footer class="genesis-server-footer">
+    Genesis Venture Building Studio partner annotation workspace.
+  </footer>
 {% endblock %}
